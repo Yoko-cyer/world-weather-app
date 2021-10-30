@@ -4,9 +4,11 @@ import Title from './components/Title';
 import Form from './components/Form';
 import Results from './components/Results';
 import './App.css';
+import Loading from "./components/Loading";
 
 function App() {
 
+  const [loading, setLoading] = useState(false)
   const [city, setCity] = useState("")
   const [results, setResults] = useState({
     country: "",
@@ -18,6 +20,7 @@ function App() {
 
   const getWeather = (e) => {
     e.preventDefault()
+    setLoading(true)
     axios.get(`http://api.weatherapi.com/v1/current.json?key=343a8c615942403699b120523212410&q=${city}&aqi=no`)
     .then(res => {
       setResults({
@@ -27,7 +30,10 @@ function App() {
         conditionText: res.data.current.condition.text,
         icon: res.data.current.condition.icon
       })
+      setCity("")
+      setLoading(false)
     })
+    .catch(err => alert ("Error happened. Please reload the page to try again"))
   }
 
   return (
@@ -36,6 +42,7 @@ function App() {
         <Title />
         <Form setCity={setCity} getWeather={getWeather}/>
         <Results results= {results}/>
+        {loading ? <Loading /> : <Results results={results}/>}
       </div>
     </div>
   );
